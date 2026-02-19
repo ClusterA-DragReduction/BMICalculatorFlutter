@@ -1,4 +1,4 @@
-name: Build iOS APK
+name: Build iOS App
 
 on:
   push:
@@ -20,26 +20,21 @@ jobs:
         flutter-version: '3.24.0'
         channel: 'stable'
         
+    - name: Create Flutter project
+      run: |
+        flutter create --org com.example --project-name bmi_calculator --platforms ios temp_flutter_app
+        cp -r temp_flutter_app/ios/* ios/
+        rm -rf temp_flutter_app
+      
     - name: Get dependencies
       run: flutter pub get
       
     - name: Build iOS for simulator
       run: flutter build ios --simulator --no-codesign
       
-    - name: Build iOS for release (IPA)
-      run: |
-        flutter build ipa --release --export-options-plist=/Users/runner/runners/*/export_options.plist
-      
-    - name: Upload iOS artifacts
+    - name: Upload iOS simulator app
       uses: actions/upload-artifact@v4
       with:
-        name: ios-app
+        name: ios-simulator-app
         path: build/ios/iphonesimulator/Runner.app
-        retention-days: 30
-        
-    - name: Upload IPA
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-ipa
-        path: build/ios/ipa/BMICalculator.ipa
         retention-days: 30
