@@ -22,8 +22,9 @@ jobs:
         
     - name: Create Flutter project
       run: |
+        cd $GITHUB_WORKSPACE
         flutter create --org com.example --project-name bmi_calculator --platforms ios temp_flutter_app
-        cp -r temp_flutter_app/ios/* ios/
+        cp -r temp_flutter_app/ios .
         rm -rf temp_flutter_app
       
     - name: Get dependencies
