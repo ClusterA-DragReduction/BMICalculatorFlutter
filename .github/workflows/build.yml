@@ -1,0 +1,45 @@
+name: Build iOS APK
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.0'
+        channel: 'stable'
+        
+    - name: Get dependencies
+      run: flutter pub get
+      
+    - name: Build iOS for simulator
+      run: flutter build ios --simulator --no-codesign
+      
+    - name: Build iOS for release (IPA)
+      run: |
+        flutter build ipa --release --export-options-plist=/Users/runner/runners/*/export_options.plist
+      
+    - name: Upload iOS artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-app
+        path: build/ios/iphonesimulator/Runner.app
+        retention-days: 30
+        
+    - name: Upload IPA
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-ipa
+        path: build/ios/ipa/BMICalculator.ipa
+        retention-days: 30
